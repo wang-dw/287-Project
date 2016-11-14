@@ -3,7 +3,7 @@ Game of Snake for ECE 287
 
 Creating a classic game of Snake.
 
-                            Rough Plan
+Rough Plan
 
 1st: Figure out how to display an image from the de2 board to a monitor
 
