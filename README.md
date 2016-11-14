@@ -15,7 +15,9 @@ Rough Plan
 	inside the screen using the 4 buttons on the de2 board. Create object 2
 	that will randomly appear on the screen.
 
-3rd: Set up parameters:
+3rd: 
+
+	Set up parameters:
 
      Increase size of object 1
      Game over when object 1 touches the screen edge
