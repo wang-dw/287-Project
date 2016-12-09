@@ -1,0 +1,8 @@
+
+State Machine - |Snake|S
+Name S.T_RIGHT S.T_LEFT S.T_DOWN S.T_UP S.IDLE 
+S.IDLE 0 0 0 0 0 
+S.T_UP 0 0 0 1 1 
+S.T_DOWN 0 0 1 0 1 
+S.T_LEFT 0 1 0 0 1 
+S.T_RIGHT 1 0 0 0 1 

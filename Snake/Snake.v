@@ -1,30 +1,701 @@
-//COPY PASTE TEST CODE
-//COPY PASTE TEST CODE
-//COPY PASTE TEST CODE
-module Snake(clk, vga_h_sync, vga_v_sync, vga_R, vga_G, vga_B);
+module Snake(clk, rst, DAC_clk, VGA_R, VGA_G, VGA_B, VGA_Hsync, VGA_Vsync, blank_n,
+					up, down, left, right, KB_clk, data);
+					
+input clk, rst;
+input KB_clk, data;
 
-input clk;
-output vga_h_sync, vga_v_sync, vga_R, vga_G, vga_B;
+input up, down, left, right; //direction
+//reg move_up, move_down, move_left, move_right;
 
-wire inDisplayArea;
-wire [9:0] CounterX;
-wire [8:0] CounterY;
+wire [4:0]direction;
+wire reset;
 
-hvsync_generator syncgen(.clk(clk), .vga_h_sync(vga_h_sync), .vga_v_sync(vga_v_sync), 
-                            .inDisplayArea(inDisplayArea), .CounterX(CounterX), .CounterY(CounterY));
+reg [4:0]S; //state
+reg [4:0]NS; //next state
 
-// Draw a border around the screen
-wire border = (CounterX[9:3]==0) || (CounterX[9:3]==79) || (CounterY[8:3]==0) || (CounterY[8:3]==59);
-wire R = border;
-wire G = border;
-wire B = border;
+output reg [7:0]VGA_R;
+output reg [7:0]VGA_G;
+output reg [7:0]VGA_B;
 
-reg vga_R, vga_G, vga_B;
-always @(posedge clk)
+output VGA_Hsync;
+output VGA_Vsync;
+output DAC_clk;
+output blank_n;
+
+wire [10:0]xCounter;
+wire [10:0]yCounter;
+
+wire R;
+wire G;
+wire B;
+
+wire update;
+wire VGA_clk;
+wire displayArea;
+
+wire snakeHead;
+reg snakeBody;
+reg [9:0]xHead;
+reg [9:0]yHead;
+
+reg [9:0]foodCount;
+
+reg [10:0]foodX,foodY;
+reg [15:0]foodXCount, foodYCount;
+
+reg foodCollide;
+
+reg [10:0] x, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15; //position of body
+reg [10:0] y, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13, y14, y15;
+
+reg body1, body2, body3, body4, body5, body6,
+		body7, body8, body9, body10, body11, body12,
+		body13, body14, body15;
+
+
+reg border;
+reg game_over;
+reg win_game;
+
+kbInput keyboard(KB_clk, data, direction, reset);
+updateCLK clk_updateCLK(clk, update);
+clk_reduce reduce(clk, VGA_clk);
+VGA_generator generator(VGA_clk, VGA_Hsync, VGA_Vsync, DisplayArea, xCounter, yCounter, blank_n);
+
+assign DAC_clk = VGA_clk;
+
+assign snakeHead = (xCounter >= x && xCounter <= x+15 && yCounter >= y && yCounter <= y + 15);
+
+assign food = (xCounter >= foodX + 5 && xCounter <= foodX + 15 && yCounter >= foodY + 5 && yCounter <= foodY + 15);
+
+initial
 begin
-  vga_R <= R & inDisplayArea;
-  vga_G <= G & inDisplayArea;
-  vga_B <= B & inDisplayArea;
+	
+	foodX = 9'd400;//400
+	foodY = 8'd400;//400
+	foodXCount = 9'd400;
+	foodYCount = 8'd400;
+	
+	x = 11'd320; y = 11'd240;
+	x1 = 11'd320; y1 = 11'd240;
+	x2 = 11'd320; y2 = 11'd240;
+	x3 = 11'd320; y3 = 11'd240;
+	x4 = 11'd240; y4 = 11'd240;
+	x5 = 11'd220; y5 = 11'd240;
+	x6 = 11'd320; y6 = 11'd240;
+	x7 = 11'd300; y7 = 11'd240;
+	x8 = 11'd280; y8 = 11'd240;
+	x9 = 11'd260; y9 = 11'd240;
+	x10 = 11'd240; y10 = 11'd240;
+	x11 = 11'd220; y11 = 11'd240;
+	x12 = 11'd320; y12 = 11'd240;
+	x13 = 11'd300; y13 = 11'd240;
+	x14 = 11'd280; y14 = 11'd240;
+	x15 = 11'd260; y15 = 11'd240;
+	
+	
+	//move_up = 1; 
+	//move_down = 1; 
+	//move_left = 1; 
+	//move_right = 1;
+end
+/*
+parameter 	IDLE = 		5'b00001, //initial state. no movement
+				T_UP = 		5'b00010,
+				T_DOWN = 	5'b00100,
+				T_LEFT = 	5'b01000,
+				T_RIGHT = 	5'b10000;
+				
+always@(posedge update)
+begin
+	if(rst == 0)
+		S <= IDLE;
+	else
+		S <= NS;
+end
+*/
+/*
+always@(*)
+begin
+/*
+	case(S)
+		IDLE:
+		T_UP:
+		begin
+			if(move_right == 0)
+				NS = T_RIGHT;
+			else if(move_left == 0)
+				NS = T_LEFT;
+			else	
+				NS = S;
+		end
+		T_DOWN:
+		begin
+			if(move_right == 0)
+				NS = T_RIGHT;
+			else if(move_left == 0)
+				NS = T_LEFT;
+			else	
+				NS = S;
+		end
+		T_LEFT:
+		begin
+			if(move_down == 0)
+				NS = T_DOWN;
+			else if(move_up == 0)
+				NS = T_UP;
+			else
+				NS=S;
+		end
+		T_RIGHT:
+		begin
+			if(move_up == 0)
+				NS  =T_UP;
+			else if(move_down == 0)
+				NS = T_DOWN;
+			else
+				NS = S;
+		end
+	endcase
+	
+	if(up == 0)
+		NS = T_UP;
+	else if(down == 0)
+		NS = T_DOWN;
+	else if(left == 0)
+		NS = T_LEFT;
+	else if(right == 0)
+		NS = T_RIGHT;
+	else
+		NS = S;
+end
+*/
+
+always@(posedge VGA_clk)
+begin
+	if(rst == 0)
+	begin
+		foodX <= foodXCount;
+		foodY <= foodYCount;
+		
+		body1 <= 0;
+		body2 <= 0;
+		body3 <= 0;
+		body4 <= 0;
+		body5 <= 0;
+		body6 <= 0;
+		body7 <= 0;
+		body8 <= 0;
+		body9 <= 0;
+		body10 <= 0;
+		body11 <= 0;
+		body12 <= 0;
+		body13 <= 0;
+		body14 <= 0;
+		body15 <= 0;
+		
+		win_game <= 0;
+		game_over <= 0;
+		foodCount <= 0;
+	end
+	else if(snakeHead && food || 
+			 (food &&(body1 || body2 || body3 || body4
+					 || body5 || body6 || body7 || body8
+					  || body9 || body10 || body11 || body12
+					   || body13 || body14 || body15)))//making sure that food doesnt spawn in border and snakebody
+	begin
+		foodX <= foodXCount;
+		foodY <= foodYCount;
+		
+		foodCount <= foodCount + 1;
+	end
+	else if(food && border)
+	begin
+		foodX <= foodXCount;
+		foodY <= foodYCount;
+	end
+	else if(snakeHead && (body1 || body2 || body3 || body4
+					 || body5 || body6 || body7 || body8
+					  || body9 || body10 || body11 || body12
+					   || body13 || body14 || body15 || border))
+	begin
+		game_over <= 1;
+	end
+	
+	if(foodCount > 10'd0)
+	begin			
+		body1 <= (xCounter >= x1 && xCounter <= x1+15 && yCounter >= y1 && yCounter <= y1 +15);
+	end
+	if(foodCount > 10'd1)
+	begin			
+		body2 <= (xCounter >= x2 && xCounter <= x2+15 && yCounter >= y2 && yCounter <= y2 +15);
+	end
+		if(foodCount > 10'd2)
+	begin			
+		body3 <= (xCounter >= x3 && xCounter <= x3+15 && yCounter >= y3 && yCounter <= y3 +15);
+	end
+	if(foodCount > 10'd3)
+	begin			
+		body4 <= (xCounter >= x4 && xCounter <= x4+15 && yCounter >= y4 && yCounter <= y4 +15);
+	end
+		if(foodCount > 10'd4)
+	begin			
+		body5 <= (xCounter >= x5 && xCounter <= x5+15 && yCounter >= y5 && yCounter <= y5 +15);
+	end
+	if(foodCount > 10'd5)
+	begin			
+		body6 <= (xCounter >= x6 && xCounter <= x6+15 && yCounter >= y6 && yCounter <= y6 +15);
+	end
+		if(foodCount > 10'd6)
+	begin			
+		body7 <= (xCounter >= x7 && xCounter <= x7+15 && yCounter >= y7 && yCounter <= y7 +15);
+	end
+	if(foodCount > 10'd7)
+	begin			
+		body8 <= (xCounter >= x8 && xCounter <= x8+15 && yCounter >= y8 && yCounter <= y8 +15);
+	end
+		if(foodCount > 10'd8)
+	begin			
+		body9 <= (xCounter >= x9 && xCounter <= x9+15 && yCounter >= y9 && yCounter <= y9 +15);
+	end
+	if(foodCount > 10'd9)
+	begin			
+		body10 <= (xCounter >= x10 && xCounter <= x10+15 && yCounter >= y10 && yCounter <= y10 +15);
+	end
+		if(foodCount > 10'd10)
+	begin			
+		body11 <= (xCounter >= x11 && xCounter <= x11+15 && yCounter >= y11 && yCounter <= y11 +15);
+	end
+	if(foodCount > 10'd11)
+	begin			
+		body12 <= (xCounter >= x12 && xCounter <= x12+15 && yCounter >= y12 && yCounter <= y12 +15);
+	end
+		if(foodCount > 10'd12)
+	begin			
+		body13 <= (xCounter >= x13 && xCounter <= x13+15 && yCounter >= y13 && yCounter <= y13 +15);
+	end
+	if(foodCount > 10'd13)
+	begin			
+		body14 <= (xCounter >= x14 && xCounter <= x14+15 && yCounter >= y14 && yCounter <= y14 +15);
+	end
+		if(foodCount > 10'd14)
+	begin			
+		body15 <= (xCounter >= x15 && xCounter <= x15+15 && yCounter >= y15 && yCounter <= y15 +15);
+	end
+	if(foodCount > 10'd15)
+	begin
+		win_game <= 1;
+		if(snakeHead&&border)
+			game_over <= 0;
+	end
 end
 
+always@(posedge update)
+begin
+	if(rst == 0)
+	begin
+		//move_up <= 1; 
+		//move_down <= 1; 
+		//move_left <= 1; 
+		//move_right <= 1;
+		
+		x <= 11'd320; 
+		y <= 11'd240;
+		
+		//foodXCount <= foodX;
+		//foodYCount <= foodY;
+	end
+	else
+	begin
+	
+		foodXCount <= ((foodXCount + 5'd20) % 10'd600); //randomizes food
+		foodYCount <= (foodYCount + 5'd20) % 9'd420;  //randomizes food
+					
+		x1 <= x; y1 <= y;
+		x2 <= x1; y2 <= y1;
+		x3 <= x2; y3 <= y2;
+		x4 <= x3; y4 <= y3;
+		x5 <= x4; y5 <= y4;
+		x6 <= x5; y6 <= y5;
+		x7 <= x6; y7 <= y6;
+		x8 <= x7; y8 <= y7;
+		x9 <= x8; y9 <= y8;
+		x10 <= x9; y10 <= y9;
+		x11 <= x10; y11 <= y10;
+		x12 <= x11; y12 <= y11;
+		x13 <= x12; y13 <= y12;
+		x14 <= x13; y14 <= y13;
+		x15 <= x14; y15 <= y14;
+
+/*	
+		case(S)
+			IDLE:
+			begin
+				move_up <= 1;
+				move_down <= 1; 
+				move_left <= 1; 
+				move_right <= 1;
+				
+			end
+			T_UP:
+			begin
+				move_up <= 0;
+				move_down <= 1; 
+				move_left <= 1; 
+				move_right <= 1;
+				
+					y <= y - 11'd20;
+			end
+			T_DOWN:
+			begin
+				move_up <= 1;
+				move_down <= 0; 
+				move_left <= 1; 
+				move_right <= 1;
+				
+					y <= y + 11'd20;
+			end
+			T_LEFT:
+			begin
+				move_up <= 1;
+				move_down <= 1; 
+				move_left <= 0; 
+				move_right <= 1;
+				
+				x <= x - 11'd20;
+			end
+			T_RIGHT:
+			begin
+				move_up <= 1;
+				move_down <= 1; 
+				move_left <= 1; 
+				move_right <= 0;
+				
+				x <= x + 11'd20;
+			end
+		endcase
+		*/
+			case(direction)
+			5'b00000:
+				begin
+					x <= 11'd320; 
+					y <= 11'd240;
+				end
+			5'b00010: y <= y - 11'd20; //up
+			5'b00100: x <= x - 11'd20; //left
+			5'b01000: y <= y + 11'd20; //down
+			5'b10000: x <= x + 11'd20; //right
+			endcase
+			
+	end
+	/*
+	if(foodCollide)
+		begin
+			foodX <= foodXCount;
+			foodY <= foodYCount;
+		end
+		
+		if(food&&snakeHead)//making sure that food doesnt spawn in border and snakebody
+		begin
+			foodX = foodXCount;
+			foodY = foodYCount;
+		end*/
+end
+/*
+always@(posedge VGA_clk)
+begin
+	if(rst == 0)
+	begin	
+		foodCollide <= 0;
+	end
+	else
+		if(snakeHead && food || food && border)//eatting
+		begin
+			foodCollide <= 1;
+		end
+		else
+			foodCollide <= 0;
+end*/
+
+/*
+always@(posedge VGA_clk)
+begin
+	if(rst == 0)
+	begin
+		x <= 11'd320; y <= 11'd240;
+		x1 <= 11'd300; y1 <= 11'd240;
+		x2 <= 11'd280; y2 <= 11'd240;
+		x3 <= 11'd260; y3 <= 11'd240;
+		x4 <= 11'd240; y4 <= 11'd240;
+		x5 <= 11'd220; y5 <= 11'd240;
+	end
+
+	/*
+	case(x)
+	10'd640:
+	begin
+		x <= 5'd0;
+	end
+	-10'd20:
+	begin
+		x <= 10'd640;
+	end
+	endcase
+	
+	case(y)
+	10'd460:
+	begin
+		y <= 5'd0;
+	end
+	-10'd20:
+	begin
+		y <= 10'd460;
+	end
+	endcase
+	
+	
+	
+	case(S)
+		IDLE:
+		begin
+			//nothing
+			//NS <= {move_right, move_left, move_down, move_up};
+		end
+		D_UP:
+		begin
+			y <= y - 11'd20;
+			NS <= {move_right, move_left, move_down, move_up};
+		end
+		D_DOWN:
+		begin
+			y <= y + 11'd20;
+			NS <= {move_right, move_left, move_down, move_up};
+		end
+		D_LEFT:
+		begin
+			x <= x - 11'd20;
+			NS <= {move_right, move_left, move_down, move_up};
+		end
+		D_RIGHT:
+		begin
+			x <= x + 11'd20;
+			NS <= {move_right, move_left, move_down, move_up};
+		end
+	endcase
+	
+	//NS <= {move_right, move_left, move_down, move_up};
+	
+end
+*/
+/*
+always@(posedge VGA_clk)
+begin
+	if(rst == 1'b0)
+	begin
+		move_up <= 0; 
+		move_down <= 0; 
+		move_left <= 0; 
+		move_right <= 0;
+		
+		S <= NS;
+	end
+	else
+	begin
+		if(up == 1 && move_down == 0)
+		begin
+			move_up <= 1; 
+			move_down <= 0;
+			move_left <= 0; 
+			move_right <= 0;
+			S <= NS;
+		end
+		else if(down == 1 && move_up == 0)
+		begin
+			move_up <= 0; 
+			move_down <= 1; 
+			move_left <= 0; 
+			move_right <= 0;
+			S <= NS;
+		end
+		else if(left == 1 && move_right == 0)
+		begin
+			move_up <= 0; 
+			move_down <= 0; 
+			move_left <= 1; 
+			move_right <= 0;
+			S <= NS;
+		end
+		else if(right == 1 && move_left == 0)
+		begin
+			move_up <= 0; 
+			move_down <= 0; 
+			move_left <= 0; 
+			move_right <= 1;
+			S <= NS;
+		end
+		else
+		begin
+			S <= S;
+		end
+	end
+end
+*/
+always @(posedge VGA_clk)//border
+begin
+	border <= (((xCounter >= 0) && (xCounter < 11) || (xCounter >= 630) && (xCounter < 641)) 
+				|| ((yCounter >= 0) && (yCounter < 11) || (yCounter >= 470) && (yCounter < 481)));
+end
+	
+assign R = ((snakeHead || body1 || body2 || body3 || body4
+					 || body5 || body6 || body7 || body8
+					  || body9 || body10 || body11 || body12
+					   || body13 || body14 || body15) || food || game_over) && ~win_game;
+assign G = (snakeHead || body1 || body2 || body3 || body4
+					 || body5 || body6 || body7 || body8
+					  || body9 || body10 || body11 || body12
+					   || body13 || body14 || body15 || win_game) && ~game_over;
+assign B = ((snakeHead || body1 || body2 || body3 || body4
+					 || body5 || body6 || body7 || body8
+					  || body9 || body10 || body11 || body12
+					   || body13 || body14 || body15) || border) && ~game_over && ~win_game;
+
+always@(posedge VGA_clk)//vga colors
+begin
+	VGA_R = {8{R}};
+	VGA_G = {8{G}};
+	VGA_B = {8{B}};
+end
+	
 endmodule
+
+///////////////////////////////////////////////////////////////////
+module VGA_generator(VGA_clk, VGA_Hsync, VGA_Vsync, DisplayArea, xCounter, yCounter, blank_n);
+input VGA_clk;
+output VGA_Hsync, VGA_Vsync, blank_n;
+output reg DisplayArea;
+output reg [9:0] xCounter;
+output reg [9:0] yCounter;
+
+reg HSync;
+reg VSync;
+
+integer HFront = 640;
+integer hSync = 655;
+integer HBack = 747;
+integer maxH = 793;
+
+integer VFront = 480;
+integer vSync = 490;
+integer VBack = 492;
+integer maxV = 525;
+
+always@(posedge VGA_clk)
+begin
+	if(xCounter === maxH)
+		xCounter <= 0;
+	else
+		xCounter <= xCounter + 1;
+end
+
+always@(posedge VGA_clk)
+begin
+	if(xCounter == maxH)
+	begin
+		if(yCounter === maxV)
+			yCounter <= 0;
+		else
+			yCounter <= yCounter +1;
+	end
+end
+
+always@(posedge VGA_clk)
+begin
+	DisplayArea <= ((xCounter < HFront) && (yCounter < VFront));
+end
+
+always@(posedge VGA_clk)
+begin
+	HSync <= ((xCounter >= hSync) && (xCounter < HBack));
+	VSync <= ((yCounter >= vSync) && (yCounter < VBack));
+end
+
+assign VGA_Vsync = ~VSync;
+assign VGA_Hsync = ~HSync;
+assign blank_n = DisplayArea;
+
+endmodule
+
+///////////////////////////////////////////////////////////////////
+module updateCLK(clk, update);
+input clk;
+output reg update;
+reg[21:0]count;
+
+always@(posedge clk)
+begin
+	count <= count + 1;
+	if(count == 2500000)
+	begin
+		update <= ~update;
+		count <= 0;
+	end
+end
+endmodule
+
+/////////////////////////////////////////////////////////////////// reduce clk from 50MHz to 25MHz
+module clk_reduce(clk, VGA_clk);
+
+	input clk;
+	output reg VGA_clk;
+	reg a;
+
+	always@(posedge clk)
+	begin
+		a <= ~a; 
+		VGA_clk <= a;
+	end
+endmodule
+
+///////////////////////////////////////////////////////////////////
+
+module kbInput(KB_clk, data, direction,reset);
+
+	input KB_clk, data;
+	output reg [4:0] direction;
+	output reg reset = 0; 
+	reg [7:0] code;
+	reg [10:0]keyCode, previousCode;
+	reg recordNext = 0;
+	integer count = 0;
+
+always@(negedge KB_clk)
+	begin
+		keyCode[count] = data;
+		count = count + 1;			
+		if(count == 11)
+		begin
+			if(previousCode == 8'hF0)
+			begin
+				code <= keyCode[8:1];
+			end
+			previousCode = keyCode[8:1];
+			count = 0;
+		end
+	end
+	
+	always@(code)
+	begin
+			if(code == 8'h1D) //up
+				direction = 5'b00010;
+			else if(code == 8'h1C)//left
+				direction = 5'b00100;
+			else if(code == 8'h1B)
+				direction = 5'b01000;//down
+			else if(code == 8'h23)
+				direction = 5'b10000;//right
+			else if(code == 8'hF0)
+				direction = 5'b00000;
+			else direction <= direction;
+	end	
+endmodule
+
