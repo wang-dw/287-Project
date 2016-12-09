@@ -461,10 +461,6 @@ VGA_B[7] <= VGA_B[7]~reg0.DB_MAX_OUTPUT_PORT_TYPE
 VGA_Hsync <= VGA_generator:generator.port1
 VGA_Vsync <= VGA_generator:generator.port2
 blank_n <= VGA_generator:generator.port6
-up => ~NO_FANOUT~
-down => ~NO_FANOUT~
-left => ~NO_FANOUT~
-right => ~NO_FANOUT~
 KB_clk => KB_clk.IN1
 data => data.IN1
 

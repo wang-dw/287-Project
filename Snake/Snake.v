@@ -1,17 +1,11 @@
-module Snake(clk, rst, DAC_clk, VGA_R, VGA_G, VGA_B, VGA_Hsync, VGA_Vsync, blank_n,
-					up, down, left, right, KB_clk, data);
+module Snake(clk, rst, DAC_clk, VGA_R, VGA_G, VGA_B, VGA_Hsync, 
+					VGA_Vsync, blank_n, KB_clk, data);
 					
 input clk, rst;
 input KB_clk, data;
 
-input up, down, left, right; //direction
-//reg move_up, move_down, move_left, move_right;
-
 wire [4:0]direction;
 wire reset;
-
-reg [4:0]S; //state
-reg [4:0]NS; //next state
 
 output reg [7:0]VGA_R;
 output reg [7:0]VGA_G;
@@ -38,12 +32,10 @@ reg snakeBody;
 reg [9:0]xHead;
 reg [9:0]yHead;
 
-reg [9:0]foodCount;
+reg [9:0]foodCount; //# of food eaten
 
 reg [10:0]foodX,foodY;
 reg [15:0]foodXCount, foodYCount;
-
-reg foodCollide;
 
 reg [10:0] x, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15; //position of body
 reg [10:0] y, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13, y14, y15;
@@ -52,11 +44,11 @@ reg body1, body2, body3, body4, body5, body6,
 		body7, body8, body9, body10, body11, body12,
 		body13, body14, body15;
 
-
 reg border;
 reg game_over;
 reg win_game;
 
+//import modules
 kbInput keyboard(KB_clk, data, direction, reset);
 updateCLK clk_updateCLK(clk, update);
 clk_reduce reduce(clk, VGA_clk);
@@ -64,15 +56,15 @@ VGA_generator generator(VGA_clk, VGA_Hsync, VGA_Vsync, DisplayArea, xCounter, yC
 
 assign DAC_clk = VGA_clk;
 
-assign snakeHead = (xCounter >= x && xCounter <= x+15 && yCounter >= y && yCounter <= y + 15);
+assign snakeHead = (xCounter >= x && xCounter <= x+15 && yCounter >= y && yCounter <= y + 15); //assign snakeHead value
 
-assign food = (xCounter >= foodX + 5 && xCounter <= foodX + 15 && yCounter >= foodY + 5 && yCounter <= foodY + 15);
+assign food = (xCounter >= foodX + 5 && xCounter <= foodX + 15 && yCounter >= foodY + 5 && yCounter <= foodY + 15); //assign food value
 
 initial
 begin
 	
-	foodX = 9'd400;//400
-	foodY = 8'd400;//400
+	foodX = 9'd400;
+	foodY = 8'd400;
 	foodXCount = 9'd400;
 	foodYCount = 8'd400;
 	
@@ -92,84 +84,7 @@ begin
 	x13 = 11'd300; y13 = 11'd240;
 	x14 = 11'd280; y14 = 11'd240;
 	x15 = 11'd260; y15 = 11'd240;
-	
-	
-	//move_up = 1; 
-	//move_down = 1; 
-	//move_left = 1; 
-	//move_right = 1;
 end
-/*
-parameter 	IDLE = 		5'b00001, //initial state. no movement
-				T_UP = 		5'b00010,
-				T_DOWN = 	5'b00100,
-				T_LEFT = 	5'b01000,
-				T_RIGHT = 	5'b10000;
-				
-always@(posedge update)
-begin
-	if(rst == 0)
-		S <= IDLE;
-	else
-		S <= NS;
-end
-*/
-/*
-always@(*)
-begin
-/*
-	case(S)
-		IDLE:
-		T_UP:
-		begin
-			if(move_right == 0)
-				NS = T_RIGHT;
-			else if(move_left == 0)
-				NS = T_LEFT;
-			else	
-				NS = S;
-		end
-		T_DOWN:
-		begin
-			if(move_right == 0)
-				NS = T_RIGHT;
-			else if(move_left == 0)
-				NS = T_LEFT;
-			else	
-				NS = S;
-		end
-		T_LEFT:
-		begin
-			if(move_down == 0)
-				NS = T_DOWN;
-			else if(move_up == 0)
-				NS = T_UP;
-			else
-				NS=S;
-		end
-		T_RIGHT:
-		begin
-			if(move_up == 0)
-				NS  =T_UP;
-			else if(move_down == 0)
-				NS = T_DOWN;
-			else
-				NS = S;
-		end
-	endcase
-	
-	if(up == 0)
-		NS = T_UP;
-	else if(down == 0)
-		NS = T_DOWN;
-	else if(left == 0)
-		NS = T_LEFT;
-	else if(right == 0)
-		NS = T_RIGHT;
-	else
-		NS = S;
-end
-*/
 
 always@(posedge VGA_clk)
 begin
@@ -202,14 +117,13 @@ begin
 			 (food &&(body1 || body2 || body3 || body4
 					 || body5 || body6 || body7 || body8
 					  || body9 || body10 || body11 || body12
-					   || body13 || body14 || body15)))//making sure that food doesnt spawn in border and snakebody
+					   || body13 || body14 || body15)))//respawn if snake eats food or food spawns in snake
 	begin
 		foodX <= foodXCount;
 		foodY <= foodYCount;
-		
 		foodCount <= foodCount + 1;
 	end
-	else if(food && border)
+	else if(food && border)  //respawn if food in border
 	begin
 		foodX <= foodXCount;
 		foodY <= foodYCount;
@@ -217,12 +131,12 @@ begin
 	else if(snakeHead && (body1 || body2 || body3 || body4
 					 || body5 || body6 || body7 || body8
 					  || body9 || body10 || body11 || body12
-					   || body13 || body14 || body15 || border))
+					   || body13 || body14 || body15 || border)) //game over screen
 	begin
 		game_over <= 1;
 	end
 	
-	if(foodCount > 10'd0)
+	if(foodCount > 10'd0) //assigning body values
 	begin			
 		body1 <= (xCounter >= x1 && xCounter <= x1+15 && yCounter >= y1 && yCounter <= y1 +15);
 	end
@@ -293,17 +207,9 @@ end
 always@(posedge update)
 begin
 	if(rst == 0)
-	begin
-		//move_up <= 1; 
-		//move_down <= 1; 
-		//move_left <= 1; 
-		//move_right <= 1;
-		
+	begin	
 		x <= 11'd320; 
-		y <= 11'd240;
-		
-		//foodXCount <= foodX;
-		//foodYCount <= foodY;
+		y <= 11'd240;		
 	end
 	else
 	begin
@@ -327,54 +233,6 @@ begin
 		x14 <= x13; y14 <= y13;
 		x15 <= x14; y15 <= y14;
 
-/*	
-		case(S)
-			IDLE:
-			begin
-				move_up <= 1;
-				move_down <= 1; 
-				move_left <= 1; 
-				move_right <= 1;
-				
-			end
-			T_UP:
-			begin
-				move_up <= 0;
-				move_down <= 1; 
-				move_left <= 1; 
-				move_right <= 1;
-				
-					y <= y - 11'd20;
-			end
-			T_DOWN:
-			begin
-				move_up <= 1;
-				move_down <= 0; 
-				move_left <= 1; 
-				move_right <= 1;
-				
-					y <= y + 11'd20;
-			end
-			T_LEFT:
-			begin
-				move_up <= 1;
-				move_down <= 1; 
-				move_left <= 0; 
-				move_right <= 1;
-				
-				x <= x - 11'd20;
-			end
-			T_RIGHT:
-			begin
-				move_up <= 1;
-				move_down <= 1; 
-				move_left <= 1; 
-				move_right <= 0;
-				
-				x <= x + 11'd20;
-			end
-		endcase
-		*/
 			case(direction)
 			5'b00000:
 				begin
@@ -385,167 +243,16 @@ begin
 			5'b00100: x <= x - 11'd20; //left
 			5'b01000: y <= y + 11'd20; //down
 			5'b10000: x <= x + 11'd20; //right
-			endcase
-			
+			endcase		
 	end
-	/*
-	if(foodCollide)
-		begin
-			foodX <= foodXCount;
-			foodY <= foodYCount;
-		end
-		
-		if(food&&snakeHead)//making sure that food doesnt spawn in border and snakebody
-		begin
-			foodX = foodXCount;
-			foodY = foodYCount;
-		end*/
 end
-/*
-always@(posedge VGA_clk)
-begin
-	if(rst == 0)
-	begin	
-		foodCollide <= 0;
-	end
-	else
-		if(snakeHead && food || food && border)//eatting
-		begin
-			foodCollide <= 1;
-		end
-		else
-			foodCollide <= 0;
-end*/
 
-/*
-always@(posedge VGA_clk)
-begin
-	if(rst == 0)
-	begin
-		x <= 11'd320; y <= 11'd240;
-		x1 <= 11'd300; y1 <= 11'd240;
-		x2 <= 11'd280; y2 <= 11'd240;
-		x3 <= 11'd260; y3 <= 11'd240;
-		x4 <= 11'd240; y4 <= 11'd240;
-		x5 <= 11'd220; y5 <= 11'd240;
-	end
-
-	/*
-	case(x)
-	10'd640:
-	begin
-		x <= 5'd0;
-	end
-	-10'd20:
-	begin
-		x <= 10'd640;
-	end
-	endcase
-	
-	case(y)
-	10'd460:
-	begin
-		y <= 5'd0;
-	end
-	-10'd20:
-	begin
-		y <= 10'd460;
-	end
-	endcase
-	
-	
-	
-	case(S)
-		IDLE:
-		begin
-			//nothing
-			//NS <= {move_right, move_left, move_down, move_up};
-		end
-		D_UP:
-		begin
-			y <= y - 11'd20;
-			NS <= {move_right, move_left, move_down, move_up};
-		end
-		D_DOWN:
-		begin
-			y <= y + 11'd20;
-			NS <= {move_right, move_left, move_down, move_up};
-		end
-		D_LEFT:
-		begin
-			x <= x - 11'd20;
-			NS <= {move_right, move_left, move_down, move_up};
-		end
-		D_RIGHT:
-		begin
-			x <= x + 11'd20;
-			NS <= {move_right, move_left, move_down, move_up};
-		end
-	endcase
-	
-	//NS <= {move_right, move_left, move_down, move_up};
-	
-end
-*/
-/*
-always@(posedge VGA_clk)
-begin
-	if(rst == 1'b0)
-	begin
-		move_up <= 0; 
-		move_down <= 0; 
-		move_left <= 0; 
-		move_right <= 0;
-		
-		S <= NS;
-	end
-	else
-	begin
-		if(up == 1 && move_down == 0)
-		begin
-			move_up <= 1; 
-			move_down <= 0;
-			move_left <= 0; 
-			move_right <= 0;
-			S <= NS;
-		end
-		else if(down == 1 && move_up == 0)
-		begin
-			move_up <= 0; 
-			move_down <= 1; 
-			move_left <= 0; 
-			move_right <= 0;
-			S <= NS;
-		end
-		else if(left == 1 && move_right == 0)
-		begin
-			move_up <= 0; 
-			move_down <= 0; 
-			move_left <= 1; 
-			move_right <= 0;
-			S <= NS;
-		end
-		else if(right == 1 && move_left == 0)
-		begin
-			move_up <= 0; 
-			move_down <= 0; 
-			move_left <= 0; 
-			move_right <= 1;
-			S <= NS;
-		end
-		else
-		begin
-			S <= S;
-		end
-	end
-end
-*/
 always @(posedge VGA_clk)//border
 begin
 	border <= (((xCounter >= 0) && (xCounter < 11) || (xCounter >= 630) && (xCounter < 641)) 
 				|| ((yCounter >= 0) && (yCounter < 11) || (yCounter >= 470) && (yCounter < 481)));
 end
-	
+//assigning colors to objects
 assign R = ((snakeHead || body1 || body2 || body3 || body4
 					 || body5 || body6 || body7 || body8
 					  || body9 || body10 || body11 || body12
@@ -568,7 +275,7 @@ end
 	
 endmodule
 
-///////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// VGA_generator to display using VGA
 module VGA_generator(VGA_clk, VGA_Hsync, VGA_Vsync, DisplayArea, xCounter, yCounter, blank_n);
 input VGA_clk;
 output VGA_Hsync, VGA_Vsync, blank_n;
@@ -625,7 +332,7 @@ assign blank_n = DisplayArea;
 
 endmodule
 
-///////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// update clk to lower snake speed
 module updateCLK(clk, update);
 input clk;
 output reg update;
@@ -656,7 +363,7 @@ module clk_reduce(clk, VGA_clk);
 	end
 endmodule
 
-///////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// keyboard input
 
 module kbInput(KB_clk, data, direction,reset);
 

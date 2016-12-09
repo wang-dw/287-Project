@@ -1,4 +1,4 @@
---sign_div_unsign DEN_REPRESENTATION="UNSIGNED" DEN_WIDTH=10 LPM_PIPELINE=0 MAXIMIZE_SPEED=5 NUM_REPRESENTATION="UNSIGNED" NUM_WIDTH=16 SKIP_BITS=0 denominator numerator quotient remainder
+--lpm_divide DEVICE_FAMILY="Cyclone IV E" LPM_DREPRESENTATION="UNSIGNED" LPM_NREPRESENTATION="UNSIGNED" LPM_WIDTHD=8 LPM_WIDTHN=16 OPTIMIZE_FOR_SPEED=5 denom numer remain CARRY_CHAIN="MANUAL" CARRY_CHAIN_LENGTH=48 IGNORE_CARRY_BUFFERS="OFF"
 --VERSION_BEGIN 16.0 cbx_cycloneii 2016:04:27:18:05:34:SJ cbx_lpm_abs 2016:04:27:18:05:34:SJ cbx_lpm_add_sub 2016:04:27:18:05:34:SJ cbx_lpm_divide 2016:04:27:18:05:34:SJ cbx_mgl 2016:04:27:18:06:48:SJ cbx_nadder 2016:04:27:18:05:34:SJ cbx_stratix 2016:04:27:18:05:34:SJ cbx_stratixii 2016:04:27:18:05:34:SJ cbx_util_mgl 2016:04:27:18:05:34:SJ  VERSION_END
 
 
@@ -18,30 +18,26 @@
 --  agreement for further details.
 
 
-FUNCTION alt_u_div_2af (denominator[9..0], numerator[15..0])
-RETURNS ( quotient[15..0], remainder[9..0]);
+FUNCTION sign_div_unsign_ulh (denominator[7..0], numerator[15..0])
+RETURNS ( quotient[15..0], remainder[7..0]);
 
---synthesis_resources = lut 132 
-SUBDESIGN sign_div_unsign_7nh
+--synthesis_resources = lut 119 
+SUBDESIGN lpm_divide_9bm
 ( 
-	denominator[9..0]	:	input;
-	numerator[15..0]	:	input;
+	denom[7..0]	:	input;
+	numer[15..0]	:	input;
 	quotient[15..0]	:	output;
-	remainder[9..0]	:	output;
+	remain[7..0]	:	output;
 ) 
 VARIABLE 
-	divider : alt_u_div_2af;
-	norm_num[15..0]	: WIRE;
-	protect_quotient[15..0]	: WIRE;
-	protect_remainder[9..0]	: WIRE;
+	divider : sign_div_unsign_ulh;
+	numer_tmp[15..0]	: WIRE;
 
 BEGIN 
-	divider.denominator[] = denominator[];
-	divider.numerator[] = norm_num[];
-	norm_num[] = numerator[];
-	protect_quotient[] = divider.quotient[];
-	protect_remainder[] = divider.remainder[];
-	quotient[] = protect_quotient[];
-	remainder[] = protect_remainder[];
+	divider.denominator[] = denom[];
+	divider.numerator[] = numer_tmp[];
+	numer_tmp[] = numer[];
+	quotient[] = divider.quotient[];
+	remain[] = divider.remainder[];
 END;
 --VALID FILE

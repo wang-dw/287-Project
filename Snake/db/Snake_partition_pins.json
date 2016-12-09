@@ -124,19 +124,11 @@
 					"strict" : false
 				},
 				{
-					"name" : "left",
+					"name" : "data",
 					"strict" : false
 				},
 				{
-					"name" : "down",
-					"strict" : false
-				},
-				{
-					"name" : "up",
-					"strict" : false
-				},
-				{
-					"name" : "right",
+					"name" : "KB_clk",
 					"strict" : false
 				}
 			]

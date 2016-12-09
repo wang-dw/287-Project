@@ -2,36 +2,36 @@
 TimeQuest Timing Analyzer Summary
 ------------------------------------------------------------
 
-Type  : Slow 1200mV 85C Model Setup 'clk_reduce:reduce|VGA_clk'
-Slack : -7.060
-TNS   : -473.386
-
 Type  : Slow 1200mV 85C Model Setup 'updateCLK:clk_updateCLK|update'
-Slack : -6.235
-TNS   : -322.733
+Slack : -6.662
+TNS   : -327.913
+
+Type  : Slow 1200mV 85C Model Setup 'clk_reduce:reduce|VGA_clk'
+Slack : -6.328
+TNS   : -445.404
 
 Type  : Slow 1200mV 85C Model Setup 'KB_clk'
-Slack : -6.028
-TNS   : -199.152
+Slack : -5.799
+TNS   : -185.516
 
 Type  : Slow 1200mV 85C Model Setup 'clk'
-Slack : -3.039
-TNS   : -41.571
-
-Type  : Slow 1200mV 85C Model Hold 'clk_reduce:reduce|VGA_clk'
-Slack : 0.383
-TNS   : 0.000
-
-Type  : Slow 1200mV 85C Model Hold 'updateCLK:clk_updateCLK|update'
-Slack : 0.384
-TNS   : 0.000
+Slack : -3.493
+TNS   : -41.556
 
 Type  : Slow 1200mV 85C Model Hold 'clk'
-Slack : 0.385
+Slack : 0.390
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Hold 'clk_reduce:reduce|VGA_clk'
+Slack : 0.402
 TNS   : 0.000
 
 Type  : Slow 1200mV 85C Model Hold 'KB_clk'
 Slack : 0.440
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Hold 'updateCLK:clk_updateCLK|update'
+Slack : 0.623
 TNS   : 0.000
 
 Type  : Slow 1200mV 85C Model Minimum Pulse Width 'KB_clk'
@@ -50,36 +50,36 @@ Type  : Slow 1200mV 85C Model Minimum Pulse Width 'clk_reduce:reduce|VGA_clk'
 Slack : -1.285
 TNS   : -118.220
 
-Type  : Slow 1200mV 0C Model Setup 'clk_reduce:reduce|VGA_clk'
-Slack : -6.409
-TNS   : -423.943
-
 Type  : Slow 1200mV 0C Model Setup 'updateCLK:clk_updateCLK|update'
-Slack : -5.530
-TNS   : -266.217
+Slack : -5.932
+TNS   : -272.608
+
+Type  : Slow 1200mV 0C Model Setup 'clk_reduce:reduce|VGA_clk'
+Slack : -5.642
+TNS   : -396.021
 
 Type  : Slow 1200mV 0C Model Setup 'KB_clk'
-Slack : -5.392
-TNS   : -174.735
+Slack : -5.175
+TNS   : -162.597
 
 Type  : Slow 1200mV 0C Model Setup 'clk'
-Slack : -2.736
-TNS   : -35.461
-
-Type  : Slow 1200mV 0C Model Hold 'clk_reduce:reduce|VGA_clk'
-Slack : 0.335
-TNS   : 0.000
-
-Type  : Slow 1200mV 0C Model Hold 'updateCLK:clk_updateCLK|update'
-Slack : 0.337
-TNS   : 0.000
+Slack : -3.167
+TNS   : -35.518
 
 Type  : Slow 1200mV 0C Model Hold 'clk'
 Slack : 0.348
 TNS   : 0.000
 
+Type  : Slow 1200mV 0C Model Hold 'clk_reduce:reduce|VGA_clk'
+Slack : 0.353
+TNS   : 0.000
+
 Type  : Slow 1200mV 0C Model Hold 'KB_clk'
 Slack : 0.387
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Hold 'updateCLK:clk_updateCLK|update'
+Slack : 0.567
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Minimum Pulse Width 'KB_clk'
@@ -98,45 +98,45 @@ Type  : Slow 1200mV 0C Model Minimum Pulse Width 'clk_reduce:reduce|VGA_clk'
 Slack : -1.285
 TNS   : -118.220
 
-Type  : Fast 1200mV 0C Model Setup 'clk_reduce:reduce|VGA_clk'
-Slack : -3.011
-TNS   : -186.900
-
 Type  : Fast 1200mV 0C Model Setup 'updateCLK:clk_updateCLK|update'
-Slack : -2.489
-TNS   : -48.890
+Slack : -2.758
+TNS   : -51.307
+
+Type  : Fast 1200mV 0C Model Setup 'clk_reduce:reduce|VGA_clk'
+Slack : -2.560
+TNS   : -169.665
 
 Type  : Fast 1200mV 0C Model Setup 'KB_clk'
-Slack : -2.327
-TNS   : -66.685
+Slack : -2.252
+TNS   : -60.763
 
 Type  : Fast 1200mV 0C Model Setup 'clk'
-Slack : -0.968
-TNS   : -8.717
+Slack : -1.206
+TNS   : -8.756
 
 Type  : Fast 1200mV 0C Model Hold 'clk'
-Slack : 0.113
-TNS   : 0.000
-
-Type  : Fast 1200mV 0C Model Hold 'updateCLK:clk_updateCLK|update'
-Slack : 0.171
+Slack : 0.180
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Hold 'clk_reduce:reduce|VGA_clk'
-Slack : 0.172
+Slack : 0.182
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Hold 'KB_clk'
 Slack : 0.199
 TNS   : 0.000
 
+Type  : Fast 1200mV 0C Model Hold 'updateCLK:clk_updateCLK|update'
+Slack : 0.273
+TNS   : 0.000
+
 Type  : Fast 1200mV 0C Model Minimum Pulse Width 'KB_clk'
 Slack : -3.000
-TNS   : -83.246
+TNS   : -83.615
 
 Type  : Fast 1200mV 0C Model Minimum Pulse Width 'clk'
 Slack : -3.000
-TNS   : -35.435
+TNS   : -35.319
 
 Type  : Fast 1200mV 0C Model Minimum Pulse Width 'updateCLK:clk_updateCLK|update'
 Slack : -1.000

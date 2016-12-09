@@ -1,4 +1,4 @@
-Info (10281): Verilog HDL Declaration information at Snake.v(579): object "HSync" differs only in case from object "hSync" in the same scope
-Info (10281): Verilog HDL Declaration information at Snake.v(580): object "VSync" differs only in case from object "vSync" in the same scope
-Warning (10268): Verilog HDL information at Snake.v(671): always construct contains both blocking and non-blocking assignments
-Warning (10268): Verilog HDL information at Snake.v(686): always construct contains both blocking and non-blocking assignments
+Info (10281): Verilog HDL Declaration information at Snake.v(286): object "HSync" differs only in case from object "hSync" in the same scope File: C:/Users/David/Documents/ECE 287/Project/287-Project/Snake/Snake.v Line: 286
+Info (10281): Verilog HDL Declaration information at Snake.v(287): object "VSync" differs only in case from object "vSync" in the same scope File: C:/Users/David/Documents/ECE 287/Project/287-Project/Snake/Snake.v Line: 287
+Warning (10268): Verilog HDL information at Snake.v(378): always construct contains both blocking and non-blocking assignments File: C:/Users/David/Documents/ECE 287/Project/287-Project/Snake/Snake.v Line: 378
+Warning (10268): Verilog HDL information at Snake.v(393): always construct contains both blocking and non-blocking assignments File: C:/Users/David/Documents/ECE 287/Project/287-Project/Snake/Snake.v Line: 393
