@@ -72,18 +72,18 @@ begin
 	x1 = 11'd320; y1 = 11'd240;
 	x2 = 11'd320; y2 = 11'd240;
 	x3 = 11'd320; y3 = 11'd240;
-	x4 = 11'd240; y4 = 11'd240;
-	x5 = 11'd220; y5 = 11'd240;
+	x4 = 11'd320; y4 = 11'd240;
+	x5 = 11'd320; y5 = 11'd240;
 	x6 = 11'd320; y6 = 11'd240;
-	x7 = 11'd300; y7 = 11'd240;
-	x8 = 11'd280; y8 = 11'd240;
-	x9 = 11'd260; y9 = 11'd240;
-	x10 = 11'd240; y10 = 11'd240;
-	x11 = 11'd220; y11 = 11'd240;
+	x7 = 11'd320; y7 = 11'd240;
+	x8 = 11'd320; y8 = 11'd240;
+	x9 = 11'd320; y9 = 11'd240;
+	x10 = 11'd320; y10 = 11'd240;
+	x11 = 11'd320; y11 = 11'd240;
 	x12 = 11'd320; y12 = 11'd240;
-	x13 = 11'd300; y13 = 11'd240;
-	x14 = 11'd280; y14 = 11'd240;
-	x15 = 11'd260; y15 = 11'd240;
+	x13 = 11'd320; y13 = 11'd240;
+	x14 = 11'd320; y14 = 11'd240;
+	x15 = 11'd320; y15 = 11'd240;
 end
 
 always@(posedge VGA_clk)
@@ -113,94 +113,97 @@ begin
 		game_over <= 0;
 		foodCount <= 0;
 	end
-	else if(snakeHead && food || 
+	else 
+		begin
+		if(snakeHead && food || 
 			 (food &&(body1 || body2 || body3 || body4
 					 || body5 || body6 || body7 || body8
 					  || body9 || body10 || body11 || body12
 					   || body13 || body14 || body15)))//respawn if snake eats food or food spawns in snake
-	begin
-		foodX <= foodXCount;
-		foodY <= foodYCount;
-		foodCount <= foodCount + 1;
-	end
-	else if(food && border)  //respawn if food in border
-	begin
-		foodX <= foodXCount;
-		foodY <= foodYCount;
-	end
-	else if(snakeHead && (body1 || body2 || body3 || body4
+		begin
+			foodX <= foodXCount;
+			foodY <= foodYCount;
+			foodCount <= foodCount + 1;
+		end
+		else if(food && border)  //respawn if food in border
+		begin
+			foodX <= foodXCount;
+			foodY <= foodYCount;
+		end
+		else if(snakeHead && (body1 || body2 || body3 || body4
 					 || body5 || body6 || body7 || body8
 					  || body9 || body10 || body11 || body12
 					   || body13 || body14 || body15 || border)) //game over screen
-	begin
-		game_over <= 1;
-	end
-	
-	if(foodCount > 10'd0) //assigning body values
-	begin			
-		body1 <= (xCounter >= x1 && xCounter <= x1+15 && yCounter >= y1 && yCounter <= y1 +15);
-	end
-	if(foodCount > 10'd1)
-	begin			
-		body2 <= (xCounter >= x2 && xCounter <= x2+15 && yCounter >= y2 && yCounter <= y2 +15);
-	end
+		begin
+			game_over <= 1;
+		end
+		
+		if(foodCount > 10'd0) //assigning body values
+		begin			
+			body1 <= blank_n &&(xCounter >= x1 && xCounter <= x1+15 && yCounter >= y1 && yCounter <= y1 +15);
+		end
+		if(foodCount > 10'd1)
+		begin	
+			body2 <= blank_n &&(xCounter >= x2 && xCounter <= x2+15 && yCounter >= y2 && yCounter <= y2 +15);
+		end
 		if(foodCount > 10'd2)
-	begin			
-		body3 <= (xCounter >= x3 && xCounter <= x3+15 && yCounter >= y3 && yCounter <= y3 +15);
-	end
-	if(foodCount > 10'd3)
-	begin			
-		body4 <= (xCounter >= x4 && xCounter <= x4+15 && yCounter >= y4 && yCounter <= y4 +15);
-	end
+		begin		
+			body3 <= (xCounter >= x3 && xCounter <= x3+15 && yCounter >= y3 && yCounter <= y3 +15);
+		end
+		if(foodCount > 10'd3)
+		begin	
+			body4 <= (xCounter >= x4 && xCounter <= x4+15 && yCounter >= y4 && yCounter <= y4 +15);
+		end
 		if(foodCount > 10'd4)
-	begin			
-		body5 <= (xCounter >= x5 && xCounter <= x5+15 && yCounter >= y5 && yCounter <= y5 +15);
-	end
-	if(foodCount > 10'd5)
-	begin			
-		body6 <= (xCounter >= x6 && xCounter <= x6+15 && yCounter >= y6 && yCounter <= y6 +15);
-	end
+		begin			
+			body5 <= (xCounter >= x5 && xCounter <= x5+15 && yCounter >= y5 && yCounter <= y5 +15);
+		end
+		if(foodCount > 10'd5)
+		begin			
+			body6 <= (xCounter >= x6 && xCounter <= x6+15 && yCounter >= y6 && yCounter <= y6 +15);
+		end
 		if(foodCount > 10'd6)
-	begin			
-		body7 <= (xCounter >= x7 && xCounter <= x7+15 && yCounter >= y7 && yCounter <= y7 +15);
-	end
-	if(foodCount > 10'd7)
-	begin			
-		body8 <= (xCounter >= x8 && xCounter <= x8+15 && yCounter >= y8 && yCounter <= y8 +15);
-	end
+		begin			
+			body7 <= (xCounter >= x7 && xCounter <= x7+15 && yCounter >= y7 && yCounter <= y7 +15);
+		end
+		if(foodCount > 10'd7)
+		begin			
+			body8 <= (xCounter >= x8 && xCounter <= x8+15 && yCounter >= y8 && yCounter <= y8 +15);
+		end
 		if(foodCount > 10'd8)
-	begin			
-		body9 <= (xCounter >= x9 && xCounter <= x9+15 && yCounter >= y9 && yCounter <= y9 +15);
-	end
-	if(foodCount > 10'd9)
-	begin			
-		body10 <= (xCounter >= x10 && xCounter <= x10+15 && yCounter >= y10 && yCounter <= y10 +15);
-	end
+		begin			
+			body9 <= (xCounter >= x9 && xCounter <= x9+15 && yCounter >= y9 && yCounter <= y9 +15);
+		end
+		if(foodCount > 10'd9)
+		begin			
+			body10 <= (xCounter >= x10 && xCounter <= x10+15 && yCounter >= y10 && yCounter <= y10 +15);
+		end
 		if(foodCount > 10'd10)
-	begin			
-		body11 <= (xCounter >= x11 && xCounter <= x11+15 && yCounter >= y11 && yCounter <= y11 +15);
-	end
-	if(foodCount > 10'd11)
-	begin			
-		body12 <= (xCounter >= x12 && xCounter <= x12+15 && yCounter >= y12 && yCounter <= y12 +15);
-	end
+		begin			
+			body11 <= (xCounter >= x11 && xCounter <= x11+15 && yCounter >= y11 && yCounter <= y11 +15);
+		end
+		if(foodCount > 10'd11)
+		begin			
+			body12 <= (xCounter >= x12 && xCounter <= x12+15 && yCounter >= y12 && yCounter <= y12 +15);
+		end
 		if(foodCount > 10'd12)
-	begin			
-		body13 <= (xCounter >= x13 && xCounter <= x13+15 && yCounter >= y13 && yCounter <= y13 +15);
-	end
-	if(foodCount > 10'd13)
-	begin			
-		body14 <= (xCounter >= x14 && xCounter <= x14+15 && yCounter >= y14 && yCounter <= y14 +15);
-	end
+		begin			
+			body13 <= (xCounter >= x13 && xCounter <= x13+15 && yCounter >= y13 && yCounter <= y13 +15);
+		end
+		if(foodCount > 10'd13)
+		begin			
+			body14 <= (xCounter >= x14 && xCounter <= x14+15 && yCounter >= y14 && yCounter <= y14 +15);
+		end
 		if(foodCount > 10'd14)
-	begin			
-		body15 <= (xCounter >= x15 && xCounter <= x15+15 && yCounter >= y15 && yCounter <= y15 +15);
-	end
-	if(foodCount > 10'd15)
-	begin
-		win_game <= 1;
-		if(snakeHead&&border)
-			game_over <= 0;
+		begin			
+			body15 <= (xCounter >= x15 && xCounter <= x15+15 && yCounter >= y15 && yCounter <= y15 +15);
+		end
+		if(foodCount > 10'd15)
+		begin
+			win_game <= 1;
+			if(snakeHead&&border)
+				game_over <= 0;
+		end
 	end
 end
 
@@ -214,8 +217,8 @@ begin
 	else
 	begin
 	
-		foodXCount <= ((foodXCount + 5'd20) % 10'd600); //randomizes food
-		foodYCount <= (foodYCount + 5'd20) % 9'd420;  //randomizes food
+		foodXCount <= ((foodXCount + 10'd75) % 10'd600); //randomizes food //600
+		foodYCount <= ((foodYCount + 10'd75) % 9'd420);  //randomizes food   //420
 					
 		x1 <= x; y1 <= y;
 		x2 <= x1; y2 <= y1;
@@ -234,11 +237,6 @@ begin
 		x15 <= x14; y15 <= y14;
 
 			case(direction)
-			5'b00000:
-				begin
-					x <= 11'd320; 
-					y <= 11'd240;
-				end
 			5'b00010: y <= y - 11'd20; //up
 			5'b00100: x <= x - 11'd20; //left
 			5'b01000: y <= y + 11'd20; //down
@@ -264,7 +262,7 @@ assign G = (snakeHead || body1 || body2 || body3 || body4
 assign B = ((snakeHead || body1 || body2 || body3 || body4
 					 || body5 || body6 || body7 || body8
 					  || body9 || body10 || body11 || body12
-					   || body13 || body14 || body15) || border) && ~game_over && ~win_game;
+					   || body13 || body14 || body15) || border) && (~game_over && ~win_game);
 
 always@(posedge VGA_clk)//vga colors
 begin
@@ -286,15 +284,15 @@ output reg [9:0] yCounter;
 reg HSync;
 reg VSync;
 
-integer HFront = 640;
-integer hSync = 655;
-integer HBack = 747;
-integer maxH = 793;
+integer HFront = 640;//640
+integer hSync = 655;//655
+integer HBack = 747;//747
+integer maxH = 793;//793
 
-integer VFront = 480;
-integer vSync = 490;
-integer VBack = 492;
-integer maxV = 525;
+integer VFront = 480;//480
+integer vSync = 490;//490
+integer VBack = 492;//492
+integer maxV = 525;//525
 
 always@(posedge VGA_clk)
 begin
@@ -400,9 +398,9 @@ always@(negedge KB_clk)
 				direction = 5'b01000;//down
 			else if(code == 8'h23)
 				direction = 5'b10000;//right
-			else if(code == 8'hF0)
-				direction = 5'b00000;
-			else direction <= direction;
+			else
+				direction = 5'b10000;
+			//else direction <= direction;
 	end	
 endmodule
 
